@@ -28,6 +28,7 @@
             // 하는데, 어떤 객체를 다운캐스팅하려면 (Object -> Cookie). 
             // 반대로 한번 업캐스팅을 해야 한다고 합니다. (Cookie -> Object)
             // 다운캐스팅 정리 : https://okky.kr/article/1163996
+            // https://velog.io/@sezzzini/Java-Casting
             return cookie;
         }
         catch(CloneNotSupportedException e) {
