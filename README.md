@@ -118,6 +118,7 @@ https://keichee.tistory.com/173
 https://sourcemaking.com/design_patterns/prototype  
 https://songhayoung.github.io/2020/08/13/Design%20Pattern/PrototypePattern/#%ED%99%9C%EC%9A%A9%EC%84%B1  
 https://jurogrammer.tistory.com/106
+https://seokrae.gitbook.io/sr/java-1/design/creational/_prototype
 
 - 서브클래스를 필요로 하지 않는다. 빌더 패턴, 팩토리 메소드 패턴의 경우  
 해당 객체를 생성하기 위해서는 인터페이스와 그것을 구현하는 서브클래스가 필요하다.  
