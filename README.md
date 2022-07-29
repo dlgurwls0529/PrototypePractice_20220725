@@ -107,11 +107,17 @@
             return null;
         }
      }
+     
+프로토타입 Object.clone을 사용하지 않고 구현할 수도 있다.  
+
+https://jurogrammer.tistory.com/106
+
 
 ### 장점
 https://keichee.tistory.com/173  
 https://sourcemaking.com/design_patterns/prototype  
 https://songhayoung.github.io/2020/08/13/Design%20Pattern/PrototypePattern/#%ED%99%9C%EC%9A%A9%EC%84%B1  
+https://jurogrammer.tistory.com/106
 
 - 서브클래스를 필요로 하지 않는다. 빌더 패턴, 팩토리 메소드 패턴의 경우  
 해당 객체를 생성하기 위해서는 인터페이스와 그것을 구현하는 서브클래스가 필요하다.  
@@ -127,6 +133,7 @@ https://songhayoung.github.io/2020/08/13/Design%20Pattern/PrototypePattern/#%ED%
 - 순환 참조가 있는 것을 고려해야 한다. 가령, 어떤 클래스의 필드에 다른 클래스의
 - 깊은 복사와 얕은 복사에 대한 고민이 필요하다.
 - 변하지 않는 객체를 못만든다. (setter가 필요함, Read-Only 객체라면 괜찮다.)
+- 프로토타입에 상속 계층이 있는 경우에 서브클래스마다 clone 메소드를 구현해야 할 수도 있다.  
 - 
 ### 깊은 복사와 얕은 복사
 ### 상속 관계에서의 적용
