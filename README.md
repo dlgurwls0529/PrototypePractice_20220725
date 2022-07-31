@@ -12,13 +12,14 @@
 
 ### 구현 방법
 언어마다 기능차이로 인해 살짝살짝 다른 느낌이 있다.  
-먼저 자바에서는 보통 이렇게 한다.  
+먼저 자바에서는 보통 이렇게 한다. (얕은 복사) 
 
      <Cookie.class, Prototype>
      implements Cloneable
      // 자바에서 지원하는 clone 쓸려면 이 인터페이스 implements해야 한다.
      // clone메소드에서 호출자가 Cloneable implements안하면 에외 던지기 때문  
      // 근데 빈 인터페이스라서 뭔가 구현할 것은 없다.
+     
      @Override
      public Object clone() {
         try {
@@ -26,7 +27,7 @@
             // 오브젝트 타입으로 생성하면 오류뜸
             // 반환 타입이 Object라서 Client에서 쓸려면 Class로 다운캐스팅해야
             // 하는데, 어떤 객체를 다운캐스팅하려면 (Object -> Cookie). 
-            // 반대로 한번 업캐스팅을 해야 한다고 합니다. (Cookie -> Object)
+            // 반대로 한번 업캐스팅을 해야 한다고 한다. (Cookie -> Object)
             // 다운캐스팅 정리 : https://okky.kr/article/1163996
             // https://velog.io/@sezzzini/Java-Casting
             return cookie;
@@ -37,6 +38,7 @@
         }
      }
      
+     
      <CoconutCookie.class, ConcretePrototype>
      extends Cookie
     
@@ -45,6 +47,7 @@
      Cookie cookie1 = (Cookie) cookie.clone();
      // 피호출자에서 리턴 시에 Object로 업캐스팅 한번 했으니까
      // Cookie로 다운캐스팅 해도 OK
+     
      CoconutCookie coconutCookie = new CoconutCookie();
      CoconutCookie coconutCookie1 = coconutCookie.clone();
      // (Cookie -> Object), (Object -> CoconutCookie)
@@ -59,7 +62,28 @@
      @Override
      public Object clone() {
         try {
-            CoconutCookie cookie = (CoconutCookie) super.clone();
+            CoconutCookie coconutCookie = (CoconutCookie) super.clone();
+            return coconutCookie;
+        }
+        catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+     }
+     
+     // 이렇게 하면 업캐스팅 했으니까 돌아갈 것이다. 
+     // 하지만 이렇게 할 경우에는 얕은 복사로 인한 문제가 몇 가지 발생한다.
+     // 깊은 복사를 위해서는 다음과 같이 코드를 추가한다.  
+     // Cookie 클래스에서는 field1과 field2이, 
+     // CoconutCookie 클래스에서는 field3이 참조형이라고 하면
+     
+     <Cookie.class>
+     @Override
+     public Object clone() {
+        try {
+            Cookie cookie = (Cookie) super.clone();
+            cookie.setField1(...); 
+            cookie.setField2(...);
             return cookie;
         }
         catch(CloneNotSupportedException e) {
@@ -68,12 +92,54 @@
         }
      }
      
-     // 이렇게 하면 업캐스팅 했으니까 돌아갈 
+     <CoconutCookie.class>
+     @Override
+     public Object clone() {
+        try {
+            CoconutCookie coconutCookie = (CoconutCookie) super.clone();
+            coconutCookie.setField1(...);
+            coconutCookie.setField2(...);
+            coconutCookie.setField3(...);
+            return coconutCookie;
+        }
+        catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+     }
      
-     
+프로토타입 Object.clone을 사용하지 않고 구현할 수도 있다.  
+
+https://jurogrammer.tistory.com/106
+
 
 ### 장점
+https://keichee.tistory.com/173  
+https://sourcemaking.com/design_patterns/prototype  
+https://songhayoung.github.io/2020/08/13/Design%20Pattern/PrototypePattern/#%ED%99%9C%EC%9A%A9%EC%84%B1  
+https://jurogrammer.tistory.com/106  
+https://seokrae.gitbook.io/sr/java-1/design/creational/_prototype  
+https://yardbirds.tistory.com/21  
+
+- 서브클래스를 필요로 하지 않는다. 빌더 패턴, 팩토리 메소드 패턴의 경우  
+해당 객체를 생성하기 위해서는 인터페이스와 그것을 구현하는 서브클래스가 필요하다.  
+(Product 클래스 이외에 생성 과정을 위한 별도의 클래스)  
+반면 프로토타입을 이용한 생성 방식은 clone 메소드를 구현하는 것만드로 생성 절차를  
+수행할 수 있다.  
+- 객체 생성 '절차'에서 필요한 비용이 엄청 클 때(HTTP 혹은 DB 다녀와서 필드를 주입)  
+그냥 한 번 생성된 프로토타입 객체를 복사하여 쓰므로, 효율적이다.  
+- Abstract Factory, Factory method, Builder, Singleton 등의 다른 생성 패턴과  
+쉽게 응용되어 적용될 수 있다.  
+
 ### 단점
+- 순환 참조가 있는 것을 고려해야 한다. 가령, 어떤 클래스의 필드에 다른 참조형 변수가 있고,  
+그 변수 내에도 다시 참조형 변수가 있는 형태를 말한다. 이 경우에 얕은 복사를 통해 객체를  
+복제한다면, 참조형 필드를 서로 공유하게 되므로, 이를 원하지 않는다면, 깊은 복사를 일일이  
+구현해야 한다.  
+- 깊은 복사와 얕은 복사에 대한 고민이 필요하다.  
+- 변하지 않는 객체를 못만든다. (setter가 필요함, Read-Only 객체라면 괜찮다.)  
+- 프로토타입에 상속 계층이 있는 경우에 서브클래스마다 clone 메소드를 구현해야 할 수도 있다.  
+
 ### 깊은 복사와 얕은 복사
 ### 상속 관계에서의 적용
 ### 리플렉션
